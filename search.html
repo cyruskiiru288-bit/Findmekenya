@@ -1,0 +1,54 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FindMe Kenya - Search</title>
+    <link rel="stylesheet" href="search.css">
+    <link rel="stylesheet" href="global.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <ul class="list">
+            <li><div class="logo"><img src="images/FindMe Kenya Logo with Emerald and Mint.png" alt="FindMe Kenya Logo"/></div></li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="aboutus.html">About Us</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h1>Find a Fundi</h1>
+        <p>Search by skill, location or name</p>
+
+        <!-- SEARCH BAR -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="e.g. Plumber, Nairobi, John..."/>
+            <button class="btn" id="searchBtn">Search</button>
+        </div>
+
+        <!-- SUGGESTION CHIPS -->
+        <div class="suggestions">
+            <span class="chip">🔧 Plumber</span>
+            <span class="chip">⚡ Electrician</span>
+            <span class="chip">🦷 Dentist</span>
+            <span class="chip">👨‍🍳 Cook</span>
+            <span class="chip">🪚 Carpenter</span>
+            <span class="chip">💇 Hairstylist</span>
+            <span class="chip">🎨 Painter</span>
+            <span class="chip">🚗 Mechanic</span>
+        </div>
+
+        <!-- SEARCH RESULTS -->
+        <div id="results">
+            <!-- Fundi cards will appear here -->
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 FindMe Kenya. All rights reserved.</p>
+        <p>Connecting clients with skilled fundis across Kenya. 🇰🇪</p>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>

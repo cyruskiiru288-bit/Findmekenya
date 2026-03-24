@@ -1,0 +1,98 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FindMe Kenya - Register & Login</title>
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="global.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <ul class="list">
+            <li><div class="logo"><img src="images/FindMe Kenya Logo with Emerald and Mint.png" alt="FindMe Kenya Logo"/></div></li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="findme.html">FindMe</a></li>
+            <li><a href="aboutus.html">About Us</a></li>
+        </ul>
+    </nav>
+
+    <main>
+
+        <!-- REGISTER SECTION -->
+        <section id="registerSection">
+            <h1>Register as a Fundi</h1>
+            <p>Join FindMe Kenya and start getting hired today!</p>
+
+            <form id="registerForm">
+                <label>Full Name</label>
+                <input type="text" id="regName" placeholder="e.g. James Kamau"/>
+
+                <label>Phone Number</label>
+                <input type="tel" id="regPhone" placeholder="e.g. 0712345678"/>
+
+                <label>Email</label>
+                <input type="email" id="regEmail" placeholder="e.g. kamau@gmail.com"/>
+
+                <label>Password</label>
+                <input type="password" id="regPassword" placeholder="Min 6 characters"/>
+
+                <p id="registerError" style="color:red; display:none;"></p>
+
+                <button type="button" class="btn" id="registerBtn">Register</button>
+            </form>
+            <!-- SUBSCRIPTION PLANS -->
+            <div id="subscriptionPlans" style="display:none;">
+                <h2>Choose Your Plan</h2>
+                <p>First 500 fundis get 6 months FREE! 🎉</p>
+                <p id="spotsLeft">⏳ Loading spots remaining...</p>
+
+                <div class="plans">
+                    <div class="plan">
+                        <h3>Monthly</h3>
+                        <p>Ksh 32/month</p>
+                        <button class="btn plan-btn" data-plan="monthly">Choose</button>
+                    </div>
+                    <div class="plan">
+                        <h3>3 Months</h3>
+                        <p>Ksh 80</p>
+                        <button class="btn plan-btn" data-plan="3months">Choose</button>
+                    </div>
+                    <div class="plan">
+                        <h3>6 Months</h3>
+                        <p>Ksh 180</p>
+                        <button class="btn plan-btn" data-plan="6months">Choose</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- LOGIN SECTION -->
+        <section id="loginSection">
+            <h2>Already have an account?</h2>
+
+            <form id="loginForm">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="e.g. kamau@gmail.com"/>
+
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Your password"/>
+
+                <p id="loginError" style="color:red; display:none;"></p>
+
+                <button type="button" class="btn" id="loginBtn">Login</button>
+            </form>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 FindMe Kenya. All rights reserved.</p>
+        <p>Connecting clients with skilled fundis across Kenya. 🇰🇪</p>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>

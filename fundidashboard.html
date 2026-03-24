@@ -1,0 +1,79 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FindMe Kenya - My Dashboard</title>
+    <link rel="stylesheet" href="fundidashboard.css">
+    <link rel="stylesheet" href="global.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <ul class="list">
+            <li><div class="logo"><img src="images/FindMe Kenya Logo with Emerald and Mint.png" alt="FindMe Kenya Logo"/></div></li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="findme.html">FindMe</a></li>
+            <li><a href="aboutus.html">About Us</a></li>
+            <li><a href="#" id="logoutBtn">Logout</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- WELCOME MESSAGE -->
+        <div id="welcomeMsg">
+            <h1>Welcome, <span id="fundiName"></span>! 👋</h1>
+            <p>Fill in your profile below so clients can find you.</p>
+        </div>
+
+        <!-- SUBSCRIPTION STATUS -->
+        <div id="subscriptionStatus">
+            <p id="subStatusMsg"></p>
+        </div>
+
+        <!-- PROFILE FORM -->
+        <section id="profileSection">
+            <h2>My Profile</h2>
+
+            <form id="profileForm">
+                <label>Full Name</label>
+                <input type="text" id="profileName" placeholder="e.g. James Kamau"/>
+
+                <label>Skill / Profession</label>
+                <input type="text" id="profileSkill" placeholder="e.g. Plumber, Electrician, Cook"/>
+
+                <label>Location</label>
+                <input type="text" id="profileLocation" placeholder="e.g. Nairobi, Westlands"/>
+
+                <label>Phone Number</label>
+                <input type="tel" id="profilePhone" placeholder="e.g. 0712345678"/>
+
+                <label>WhatsApp Number</label>
+                <input type="tel" id="profileWhatsapp" placeholder="e.g. 0712345678"/>
+
+                <label>Facebook Profile Link</label>
+                <input type="text" id="profileFacebook"placeholder="e.g. facebook.com/yourname"/>
+
+                <label>Profile Photo</label>
+                <input type="file" id="profilePhoto" accept="image/*"/>
+
+
+                <label>Bio</label>
+                <textarea id="profileBio" placeholder="Tell clients about yourself, your experience and what makes you great at your job!" rows="5"></textarea>
+
+                <p id="profileError" style="color:red; display:none;"></p>
+                <p id="profileSuccess" style="color:green; display:none;"></p>
+
+                <button type="button" class="btn" id="saveProfileBtn">Save Profile</button>
+            </form>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 FindMe Kenya. All rights reserved.</p>
+        <p>Connecting clients with skilled fundis across Kenya. 🇰🇪</p>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>

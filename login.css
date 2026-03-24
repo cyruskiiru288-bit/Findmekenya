@@ -1,0 +1,42 @@
+body{
+    background:linear-gradient(to right,aqua,white,lawngreen);
+    
+}
+img{
+    width: 100px;
+}
+.btn:hover{
+    background-color:burlywood;
+  
+} 
+.cta{
+    padding-left: 20;
+    font-size: larger;
+    
+}
+a{
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-decoration: none;
+    color: black;
+}
+a:hover{
+    font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: larger;
+    color: blue;
+}    
+
+.list{
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    list-style: none;
+}
+.btn2:hover{
+    font-size: larger;
+    color: red;
+    cursor: pointer;
+
+}
+.a2:hover{
+   color:green;
+}

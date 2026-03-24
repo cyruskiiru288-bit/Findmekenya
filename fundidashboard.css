@@ -1,0 +1,36 @@
+body{ 
+    background:linear-gradient(to right,aqua,white,lawngreen);
+}
+.heading{
+    color: brown;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+.btn:hover{
+    color: limegreen;
+    cursor: pointer;
+    font-size: larger;
+}
+img{
+    width: 100px;
+}
+ul{
+    display: flex;
+    gap: 20px;
+    list-style: none;
+}
+a{
+    text-decoration: none;
+    color: black;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+a:hover{
+    color: blue;
+}
+input{
+ width: 100%;
+ box-sizing: border-box;
+ max-width: 250px;
+ background-color: black;
+ color: azure;
+
+}

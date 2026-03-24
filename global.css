@@ -1,0 +1,264 @@
+/* ===== RESET & BASE ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Cambria, Cochin, Georgia, Times, serif;
+    background-color: #ffffff;
+    color: #2c3e50;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+    background-color: #2ecc71;
+    padding: 15px 30px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+}
+
+.logo img {
+    width: 80px;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+    font-family: Impact, sans-serif;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #e74c3c;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    font-size: 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-family: Impact, sans-serif;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #e74c3c;
+    transform: scale(1.05);
+}
+
+/* ===== FORMS ===== */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+label {
+    font-weight: bold;
+    color: #27ae60;
+    font-size: 14px;
+}
+
+input, textarea {
+    padding: 12px 15px;
+    border: 2px solid #a8e6cf;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: Cambria, serif;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+input:focus, textarea:focus {
+    border-color: #2ecc71;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    background-color: #27ae60;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+    margin-top: 40px;
+}
+
+footer p {
+    color: white;
+    margin: 5px 0;
+}
+
+/* ===== FUNDI CARDS ===== */
+.fundi-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    text-align: center;
+    border: 2px solid #a8e6cf;
+}
+
+.fundi-card:hover {
+    transform: translateY(-5px);
+}
+
+.fundi-card h3 {
+    color: #27ae60;
+    margin: 10px 0 5px 0;
+    font-size: 18px;
+}
+
+.fundi-card p {
+    color: #2c3e50;
+    font-size: 14px;
+    margin: 4px 0;
+}
+
+.contact-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.contact-buttons .btn {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+/* ===== SECTION HEADINGS ===== */
+h1 {
+    font-family: Impact, sans-serif;
+    color: #27ae60;
+    font-size: 42px;
+}
+
+h2 {
+    font-family: Impact, sans-serif;
+    color: #27ae60;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+h3 {
+    font-family: Impact, sans-serif;
+    color: #2c3e50;
+    font-size: 20px;
+}
+
+/* ===== UTILITY ===== */
+main {
+    padding: 40px 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.error {
+    color: #e74c3c;
+    font-size: 14px;
+}
+
+.success {
+    color: #2ecc71;
+    font-size: 14px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .list {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    main {
+        padding: 20px 15px;
+    }
+}
+/* ===== MOBILE NAVBAR ===== */
+@media (max-width: 600px) {
+    .navbar {
+        padding: 10px 15px;
+    }
+
+    .list {
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .logo img {
+        width: 60px;
+    }
+
+    a {
+        font-size: 13px;
+    }
+
+    /* ===== MOBILE BUTTONS ===== */
+    .btn {
+        padding: 10px 18px;
+        font-size: 14px;
+    }
+
+    /* ===== MOBILE CARDS ===== */
+    .fundi-card {
+        margin: 10px 0;
+    }
+
+    .contact-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* ===== MOBILE FORMS ===== */
+    form {
+        padding: 0 10px;
+    }
+
+    input, textarea {
+        font-size: 16px;
+    }
+
+    /* ===== MOBILE HEADINGS ===== */
+    h1 {
+        font-size: 24px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+}
