@@ -111,8 +111,6 @@ if (chips) {
 }
 
 // ===== REGISTER PAGE =====
-
-// Check spots remaining and show message
 async function checkSpots() {
     let spotsLeft = document.getElementById("spotsLeft");
     if (!spotsLeft) return;
@@ -204,7 +202,7 @@ if (registerBtn) {
     });
 }
 
-// PLAN SELECTION
+// ===== PLAN SELECTION WITH PAYSTACK =====
 const planAmounts = {
     "monthly": 32,
     "3months": 80,
@@ -219,24 +217,16 @@ if (planBtns) {
             let amount = planAmounts[plan];
             let fundi = JSON.parse(localStorage.getItem("loggedInFundi"));
 
-            // Ask for phone number
-            let phone = prompt("Enter your M-Pesa phone number (e.g. 0712345678):");
-            if (!phone) return;
-
-            // Convert to 254 format
-            if (phone.startsWith("0")) {
-                phone = "254" + phone.substring(1);
-            }
-
             try {
-                btn.textContent = "Sending prompt...";
+                btn.textContent = "Processing...";
                 btn.disabled = true;
 
-                let response = await fetch(`${API_URL}/mpesa/stk-push`, {
+                let response = await fetch(`${API_URL}/payment/initialize`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        phone: phone,
+                        phone: fundi.phone,
+                        email: fundi.email,
                         amount: amount,
                         user_id: fundi.user_id,
                         plan: plan
@@ -252,24 +242,12 @@ if (planBtns) {
                     return;
                 }
 
-                // Check if free 500 user
-                let spotsCheck = await fetch(`${API_URL}/spots-remaining`);
-                let spotsCheckData = await spotsCheck.json();
-
-                if (spotsCheckData.free_available) {
-                    // Give them 6 months free after payment
-                    await fetch(`${API_URL}/free-subscription`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ user_id: fundi.user_id })
-                    });
-                    alert("✅ Payment sent! You get 6 months FREE bonus! Welcome to FindMe Kenya! 🎉");
-                } else {
-                    alert("✅ M-Pesa prompt sent! Enter your PIN to complete payment.");
-                }
-
+                // Save reference for verification later
+                localStorage.setItem("paymentReference", data.reference);
                 localStorage.setItem("selectedPlan", plan);
-                window.location.href = "fundidashboard.html";
+
+                // Redirect to Paystack payment page
+                window.location.href = data.payment_url;
 
             } catch (error) {
                 alert("Could not connect to server. Please try again!");
@@ -410,7 +388,6 @@ if (document.getElementById("profileSection")) {
                     return;
                 }
 
-                // Upload photo if selected
                 if (photo) {
                     let formData = new FormData();
                     formData.append("file", photo);
@@ -446,4 +423,60 @@ if (document.getElementById("profileSection")) {
             window.location.href = "index.html";
         });
     }
+}
+
+// ===== PAYMENT SUCCESS PAGE =====
+if (document.getElementById("loadingMsg")) {
+    async function verifyPayment() {
+        let reference = localStorage.getItem("paymentReference");
+        let plan = localStorage.getItem("selectedPlan");
+        let fundi = JSON.parse(localStorage.getItem("loggedInFundi"));
+
+        if (!reference || !fundi) {
+            document.getElementById("loadingMsg").style.display = "none";
+            document.getElementById("errorMsg").style.display = "block";
+            return;
+        }
+
+        try {
+            let response = await fetch(`${API_URL}/payment/verify`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    reference: reference,
+                    user_id: fundi.user_id,
+                    plan: plan
+                })
+            });
+
+            let data = await response.json();
+
+            document.getElementById("loadingMsg").style.display = "none";
+
+            if (data.error) {
+                document.getElementById("errorMsg").style.display = "block";
+            } else {
+                // Check if free 500 user
+                let spotsCheck = await fetch(`${API_URL}/spots-remaining`);
+                let spotsData = await spotsCheck.json();
+
+                if (spotsData.free_available) {
+                    await fetch(`${API_URL}/free-subscription`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ user_id: fundi.user_id })
+                    });
+                }
+
+                localStorage.removeItem("paymentReference");
+                document.getElementById("successMsg").style.display = "block";
+            }
+
+        } catch (error) {
+            document.getElementById("loadingMsg").style.display = "none";
+            document.getElementById("errorMsg").style.display = "block";
+        }
+    }
+
+    verifyPayment();
 }

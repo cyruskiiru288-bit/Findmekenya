@@ -1,13 +1,28 @@
+import os
+import requests
+import cloudinary
+import cloudinary.uploader
+from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, text
 from pydantic import BaseModel
 from passlib.context import CryptContext
-import cloudinary
-import cloudinary.uploader
-import requests
-import base64
-from datetime import datetime
+
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+engine = create_engine(DATABASE_URL)
+
+cloudinary.config(
+    cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key = os.getenv("CLOUDINARY_API_KEY"),
+    api_secret = os.getenv("CLOUDINARY_API_SECRET")
+)
+
+PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 app = FastAPI()
 
@@ -17,23 +32,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-cloudinary.config(
-    cloud_name = "deeiprl8e",
-    api_key = "568122111187254",
-    api_secret = "P9pUmuY9hxqLpdgQ353RlaJ1bKM"
-)
-
-DATABASE_URL = "postgresql://postgres:findme123mahugu@localhost:5432/findmekenya"
-engine = create_engine(DATABASE_URL)
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-MPESA_CONSUMER_KEY = "02ZctAYIcpVOp97w0cKonwNdQyxuMBxr792ZSvMvquuUbjnB"
-MPESA_CONSUMER_SECRET = "Of9bMndL4Bl1D4NYDKHPjTLZBXIbbKAJQWUPBbzAyc7mQtKCroGeJNzIqBFQ7wXA"
-MPESA_SHORTCODE = "174379"
-MPESA_PASSKEY = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
-MPESA_CALLBACK_URL = "https://findmekenya.com/mpesa/callback"
 
 # ===== MODELS =====
 class RegisterData(BaseModel):
@@ -59,9 +57,15 @@ class PaymentData(BaseModel):
     amount: int
     user_id: int
     plan: str
+    email: str
 
 class FreeSubData(BaseModel):
     user_id: int
+
+class VerifyPaymentData(BaseModel):
+    reference: str
+    user_id: int
+    plan: str
 
 # ===== ROUTES =====
 @app.get("/")
@@ -243,87 +247,80 @@ async def upload_photo(user_id: int, file: UploadFile = File(...)):
     except Exception as e:
         return {"error": str(e)}
 
-def get_mpesa_token():
-    url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
-    response = requests.get(url, auth=(MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET))
-    return response.json()["access_token"]
-
-@app.post("/mpesa/stk-push")
-def stk_push(data: PaymentData):
+# ===== PAYSTACK PAYMENT =====
+@app.post("/payment/initialize")
+def initialize_payment(data: PaymentData):
     try:
-        token = get_mpesa_token()
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        password = base64.b64encode(
-            f"{MPESA_SHORTCODE}{MPESA_PASSKEY}{timestamp}".encode()
-        ).decode()
-
         headers = {
-            "Authorization": f"Bearer {token}",
+            "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
             "Content-Type": "application/json"
         }
 
         payload = {
-            "BusinessShortCode": MPESA_SHORTCODE,
-            "Password": password,
-            "Timestamp": timestamp,
-            "TransactionType": "CustomerPayBillOnline",
-            "Amount": data.amount,
-            "PartyA": data.phone,
-            "PartyB": MPESA_SHORTCODE,
-            "PhoneNumber": data.phone,
-            "CallBackURL": MPESA_CALLBACK_URL,
-            "AccountReference": "FindMeKenya",
-            "TransactionDesc": f"FindMe Kenya {data.plan} subscription"
+            "email": data.email,
+            "amount": data.amount * 100,  # Paystack uses kobo/cents
+            "currency": "KES",
+            "metadata": {
+                "user_id": data.user_id,
+                "plan": data.plan,
+                "phone": data.phone
+            }
         }
 
         response = requests.post(
-            "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+            "https://api.paystack.co/transaction/initialize",
             json=payload,
             headers=headers
         )
 
         result = response.json()
 
-        if result.get("ResponseCode") == "0":
-            return {"message": "M-Pesa prompt sent! Check your phone and enter PIN."}
+        if result.get("status"):
+            return {
+                "message": "Payment initialized!",
+                "payment_url": result["data"]["authorization_url"],
+                "reference": result["data"]["reference"]
+            }
         else:
-            return {"error": result.get("errorMessage", "Payment failed!")}
+            return {"error": result.get("message", "Payment failed!")}
 
     except Exception as e:
         return {"error": str(e)}
 
-@app.post("/mpesa/callback")
-async def mpesa_callback(request: Request):
+@app.post("/payment/verify")
+def verify_payment(data: VerifyPaymentData):
     try:
-        data = await request.json()
-        result = data["Body"]["stkCallback"]
+        headers = {
+            "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"
+        }
 
-        if result["ResultCode"] == 0:
-            phone = result["CallbackMetadata"]["Item"][4]["Value"]
-            amount = result["CallbackMetadata"]["Item"][0]["Value"]
-            mpesa_code = result["CallbackMetadata"]["Item"][1]["Value"]
+        response = requests.get(
+            f"https://api.paystack.co/transaction/verify/{data.reference}",
+            headers=headers
+        )
 
+        result = response.json()
+
+        if result.get("status") and result["data"]["status"] == "success":
             with engine.connect() as conn:
-                user = conn.execute(text(
-                    "SELECT id FROM users WHERE phone = :phone"
-                ), {"phone": phone}).fetchone()
+                conn.execute(text(
+                    "INSERT INTO subscriptions (user_id, plan, amount, is_paid, start_date, expiry_date) VALUES (:user_id, :plan, :amount, true, NOW(), NOW() + INTERVAL '30 days')"
+                ), {
+                    "user_id": data.user_id,
+                    "plan": data.plan,
+                    "amount": result["data"]["amount"] // 100
+                })
+                conn.execute(text(
+                    "UPDATE fundi_profiles SET is_active = true WHERE user_id = :user_id"
+                ), {"user_id": data.user_id})
+                conn.commit()
 
-                if user:
-                    conn.execute(text(
-                        "INSERT INTO subscriptions (user_id, amount, is_paid, mpesa_code, start_date, expiry_date) VALUES (:user_id, :amount, true, :mpesa_code, NOW(), NOW() + INTERVAL '30 days')"
-                    ), {
-                        "user_id": user.id,
-                        "amount": amount,
-                        "mpesa_code": mpesa_code
-                    })
-                    conn.execute(text(
-                        "UPDATE fundi_profiles SET is_active = true WHERE user_id = :user_id"
-                    ), {"user_id": user.id})
-                    conn.commit()
+            return {"message": "Payment verified! Profile is now active! ✅"}
+        else:
+            return {"error": "Payment not completed!"}
 
-        return {"ResultCode": 0, "ResultDesc": "Success"}
     except Exception as e:
-        return {"ResultCode": 1, "ResultDesc": str(e)}
+        return {"error": str(e)}
 
 @app.get("/spots-remaining")
 def spots_remaining():
