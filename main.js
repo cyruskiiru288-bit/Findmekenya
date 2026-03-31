@@ -1,4 +1,5 @@
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://findmekenya-api.onrender.com";
+
 
 // ===== NAVBAR =====
 let loggedIn = JSON.parse(localStorage.getItem("loggedInFundi"));
